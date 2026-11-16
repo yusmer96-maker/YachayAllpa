@@ -1,25 +1,25 @@
+# Compilacion
 .gradle/
 **/build/
-local.properties
-*.iml
-privada.key
-**/privada.key
-llaves/
-**/llaves/
 out/
-fuentes.txt
+node_modules/
+*.iml
 .idea/
 *.log
-# Secretos del servidor de voz: el .env (clave Fish, token) y la cache nunca se suben.
+
+# Secretos: llaves de firma, credenciales y rutas del SDK local.
+llaves/
+**/llaves/
+privada.key
+**/privada.key
 .env
 **/.env
-servidor-voz/voz-cache/
-node_modules/
+local.properties
 
-# Pesados que no hacen falta para construir la app:
-# el APK (va como descarga del release), las teselas ya copiadas en assets/mapa
-# y las laminas de origen de los dibujos (los cultivo_*.png recortados si van).
+# Pesados que no hacen falta para construir la app: el APK va como descarga del
+# release, las teselas ya estan copiadas en app/src/main/assets/mapa y las
+# laminas de origen solo sirven para recortar los dibujos de cultivos.
 artifacts/
 datos/gibs/
 datos/laminas-origen/
-out/
+fuentes.txt
