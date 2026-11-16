@@ -12,6 +12,8 @@ Built for the NASA Space Apps Challenge 2026 — *Field Shift: Adapting Farms wi
 [![Data](https://img.shields.io/badge/data-NASA%20POWER%20%7C%20GPM%20IMERG%20%7C%20GIBS-7B6229)](#the-nasa-data-and-what-each-one-decides)
 [![Offline](https://img.shields.io/badge/works-offline-7B6229)](#why-offline-is-the-whole-point)
 
+**[⬇ Download the APK (Android 8+)](https://github.com/yusmer96-maker/YachayAllpa/releases/tag/v1.0)**
+
 <img src="docs/img/1-recomendacion.png" width="250" alt="Recommendation screen">
 <img src="docs/img/5-estrategias.png" width="250" alt="Three rotation strategies compared">
 <img src="docs/img/4-por-que.png" width="250" alt="Why this crop: water and frost">
