@@ -12,10 +12,9 @@ Built for the NASA Space Apps Challenge 2026 — *Field Shift: Adapting Farms wi
 [![Data](https://img.shields.io/badge/data-NASA%20POWER%20%7C%20GPM%20IMERG%20%7C%20GIBS-7B6229)](#the-nasa-data-and-what-each-one-decides)
 [![Offline](https://img.shields.io/badge/works-offline-7B6229)](#why-offline-is-the-whole-point)
 
-<img src="entrega/capturas/1-recomendacion.png" width="230" alt="Recommendation screen">
-<img src="entrega/capturas/5-estrategias.png" width="230" alt="Three rotation strategies compared">
-<img src="entrega/capturas/4-por-que.png" width="230" alt="Why this crop: water and frost">
-<img src="entrega/capturas/3-mapa-chacra.png" width="230" alt="The field on NASA relief">
+<img src="entrega/capturas/1-recomendacion.png" width="250" alt="Recommendation screen">
+<img src="entrega/capturas/5-estrategias.png" width="250" alt="Three rotation strategies compared">
+<img src="entrega/capturas/4-por-que.png" width="250" alt="Why this crop: water and frost">
 
 </div>
 
@@ -109,8 +108,8 @@ anything newer. Full citations: [SOURCES.md](SOURCES.md).
 
 The tool supports the farmer, it does not replace them. Crop coefficients, altitude ranges
 and sowing months are FAO and INIA reference values, not measured in Huánuco; an agronomist
-needs to tune them to local fields. What is already verified, and what is not, is written
-down in [REVISION_GLOBAL_2026-11-15.md](REVISION_GLOBAL_2026-11-15.md).
+needs to tune them to local fields. Which parts are verified, and against what, is set out
+in [ANALISIS_CALCULOS.md](ANALISIS_CALCULOS.md).
 
 ## Repository layout
 
