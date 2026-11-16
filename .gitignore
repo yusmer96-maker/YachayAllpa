@@ -23,16 +23,3 @@ artifacts/
 datos/gibs/
 datos/laminas-origen/
 out/
-
-# Notas de trabajo internas: no van al repositorio publico.
-ESTRATEGIA_CONCURSO.md
-ENTREGA_DEMO_7PAGINAS.md
-PLAN_ANALISIS_TEMPORADA.md
-ARQUITECTURA_VOZ_KUSI.md
-ASISTENTE_EVENTOS.md
-REVISION_GLOBAL_2026-11-15.md
-# Copias de una etapa anterior del pipeline (los CSV vigentes estan en datos/nasa).
-datos-nasa/
-dist-packs/
-ANALISIS_CALCULOS.md
-DOCUMENTACION.md
