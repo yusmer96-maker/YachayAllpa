@@ -160,6 +160,28 @@ public final class Pruebas {
         for(int k=1;k<plan.size();k++)
             afirmar(plan.get(k).consejo.cultivo!=plan.get(k-1).consejo.cultivo
                     ||plan.get(k).consejo.cultivo==Cultivo.DESCANSO,"El plan no repite cultivo");
+        // Un plan es una rotación: cada campaña cambia de paso de la rueda y de familia,
+        // y no vuelve a un paso ya dado mientras queden pasos por recorrer. Sin esto el
+        // plan iba y venía entre los dos que más rinden (quinua, cebada, quinua, cebada).
+        for(int alt:new int[]{1900,2600,3000,3600})
+        for(MotorTemporada.Prioridad pr:MotorTemporada.Prioridad.values())
+        for(Cultivo previo:new Cultivo[]{Cultivo.HABAS,Cultivo.PAPA,Cultivo.MAIZ,Cultivo.QUINUA}){
+            List<ConsejoTemporada> op=motor.recomendar(b,alt,previo,1,
+                    MotorTemporada.Suelo.NO_SE,pr,hoy);
+            if(op.isEmpty())continue;
+            List<PlanRotacion.Campana> p2=PlanRotacion.armar(b,alt,previo,1,
+                    MotorTemporada.Suelo.NO_SE,pr,hoy,Decision.tomar(op,null,alt,hoy),4);
+            for(int k=1;k<p2.size();k++){
+                Cultivo c=p2.get(k).consejo.cultivo,ant=p2.get(k-1).consejo.cultivo;
+                // El descanso aparte: en puna alta puede no haber nada que sembrar.
+                if(c==Cultivo.DESCANSO||ant==Cultivo.DESCANSO)continue;
+                afirmar(c.etapa!=ant.etapa,"El plan cambia de paso de la rueda ("+alt+" m, "+pr+")");
+                afirmar(c.familia!=ant.familia,"El plan cambia de familia ("+alt+" m, "+pr+")");
+                if(k>=2&&p2.get(k-2).consejo.cultivo!=Cultivo.DESCANSO)
+                    afirmar(c.etapa!=p2.get(k-2).consejo.cultivo.etapa,
+                            "El plan no vuelve a un paso ya dado ("+alt+" m, "+pr+")");
+            }
+        }
         StringBuilder rotacion=new StringBuilder();
         for(PlanRotacion.Campana c:plan)rotacion.append(c.anio).append(' ').append(c.consejo.cultivo).append("  ");
         System.out.println("Plan de rotación: "+rotacion);
@@ -242,6 +264,21 @@ public final class Pruebas {
                 ==Decision.Accion.ESPERAR_LLUVIA,"Sin lluvia prevista se espera");
         afirmar(Decision.tomar(List.of(quinuaHoy,descanso),repartido,3000,hoy).accion
                 ==Decision.Accion.ESPERAR_LLUVIA,"Lluvia repartida sin 20 mm en 3 días: esperar");
+        // Temporada ya empezada (IMERG): la tierra está húmeda, se siembra aunque esta
+        // semana no traiga un aguacero de 20 mm; solo una semana seca hace esperar.
+        Decision.Pronostico empezada=new Decision.Pronostico(15,8,4,6,hoy.plusDays(2),3000,hoy.minusDays(25));
+        Decision conTemporada=Decision.tomar(List.of(quinuaHoy,descanso),empezada,3000,hoy);
+        afirmar(conTemporada.accion==Decision.Accion.SEMBRAR_YA
+                &&conTemporada.porque.get(0).clave.equals("temporada"),
+                "Lluvias ya empezadas: sembrar sin esperar otro aguacero");
+        Decision.Pronostico secaTras=new Decision.Pronostico(0.4,0.4,0,6,hoy.plusDays(2),3000,hoy.minusDays(25));
+        Decision conSeca=Decision.tomar(List.of(quinuaHoy,descanso),secaTras,3000,hoy);
+        afirmar(conSeca.accion==Decision.Accion.ESPERAR_LLUVIA
+                &&conSeca.porque.get(0).clave.equals("racha_seca"),
+                "Semana seca prevista: esperar aunque la temporada haya empezado");
+        Decision.Pronostico heladaTras=new Decision.Pronostico(15,8,4,-3,hoy.plusDays(2),3000,hoy.minusDays(25));
+        afirmar(Decision.tomar(List.of(quinuaHoy,descanso),heladaTras,3000,hoy).accion
+                ==Decision.Accion.ESPERAR_HELADA,"La helada manda aunque la temporada haya empezado");
         Decision medida=Decision.tomar(List.of(quinuaHoy,descanso),yaLlovio,3000,hoy);
         afirmar(medida.accion==Decision.Accion.SEMBRAR_YA&&medida.porque.get(0).clave.equals("lluvia_medida"),
                 "20 mm ya medidos en 3 días: sembrar");

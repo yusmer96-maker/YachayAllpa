@@ -52,8 +52,36 @@ function normalDe(fechas, normalZona) {
 }
 
 /**
+ * Inicio de las lluvias de esta campana (desde el 1 de septiembre): el primer dia en
+ * que se juntan 25 mm en 10 dias sin que despues venga una racha de 7 dias secos
+ * (menos de 1 mm) dentro de los 30 siguientes. Es la definicion agronomica de inicio
+ * de campana de Lodoun et al. (2013, Theor. Appl. Climatol. 111: 433-447). Un
+ * "falso inicio" (lluvia seguida de racha seca) no cuenta y se sigue buscando.
+ * Devuelve 'AAAA-MM-DD' o null si aun no empezaron.
+ */
+function inicioLluvias(id, cache, fin) {
+  const anio = +fin.slice(0, 4) - (+fin.slice(4, 6) < 9 ? 1 : 0);
+  const desde = `${anio}0901`;
+  const dias = Object.keys(cache).filter((f) => f >= desde && f <= fin && cache[f][id] !== undefined).sort();
+  const mm = (f) => (cache[f] && cache[f][id] !== undefined ? cache[f][id] : null);
+  for (let i = 9; i < dias.length; i++) {
+    const ventana = diasHasta(dias[i], 10).map(mm);
+    if (ventana.some((v) => v === null)) continue;
+    if (ventana.reduce((a, b) => a + b, 0) < 25) continue;
+    let seguidos = 0, racha = false;
+    for (const f of diasHasta(fin, 400).filter((x) => x > dias[i]).slice(0, 30)) {
+      const v = mm(f);
+      seguidos = v !== null && v < 1 ? seguidos + 1 : 0;
+      if (seguidos >= 7) { racha = true; break; }
+    }
+    if (!racha) return `${dias[i].slice(0, 4)}-${dias[i].slice(4, 6)}-${dias[i].slice(6)}`;
+  }
+  return null;
+}
+
+/**
  * Lluvia medida hasta ayer (IMERG) y su normal de la misma fuente: las 6 semanas,
- * los ultimos 3 (inicio de siembra), 7, 15 y 30 dias. Una suma con mas de un dia sin dato no se publica (null).
+ * los ultimos 3 y 10 (inicio de siembra), 7, 15 y 30 dias. Una suma con mas de un dia sin dato no se publica (null).
  */
 function reciente(id, cache, normalZona) {
   const fechas = Object.keys(cache).filter((f) => cache[f][id] !== undefined).sort();
@@ -73,8 +101,10 @@ function reciente(id, cache, normalZona) {
   return {
     fuente: 'NASA GPM IMERG V07: Late diario (lo medido) y Final mensual, 15 anos por mes 2010-2025 (lo normal)',
     hasta: iso(fin),
+    inicio: inicioLluvias(id, cache, fin),
     lluvia3: suma(diasHasta(fin, 3)),
     lluvia7: suma(diasHasta(fin, 7)),
+    lluvia10: suma(diasHasta(fin, 10)),
     lluvia15: suma(diasHasta(fin, 15)),
     lluvia30: suma(diasHasta(fin, 30)),
     normal30: normalDe(diasHasta(fin, 30), normalZona),
@@ -90,7 +120,8 @@ async function principal() {
   let cache = {}, normales = null;
   try {
     normales = await imerg.normales(path.join(RAIZ, 'imerg_normal.json'), zonas);
-    cache = await imerg.actualizar(path.join(RAIZ, 'imerg.json'), zonas, new Date(), 7 * (SEMANAS + 2));
+    // 120 dias: cubren desde septiembre hasta enero, toda la ventana de siembra.
+    cache = await imerg.actualizar(path.join(RAIZ, 'imerg.json'), zonas, new Date(), 120);
   } catch (e) {
     console.error(`IMERG: ${e.message}`);
   }

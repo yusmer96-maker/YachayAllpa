@@ -31,6 +31,8 @@ public final class DatosZona {
         public final java.time.LocalDate hasta;
         public final String fuente;
         public final double lluvia3, lluvia7, lluvia15, lluvia30, normal30;
+        /** Día en que empezaron las lluvias de la campaña (IMERG); null si aún no. */
+        public java.time.LocalDate inicio;
         public final double[] semanas, normales;
         Reciente(java.time.LocalDate hasta, String fuente, double l3, double l7, double l15, double l30,
                  double n30, double[] semanas, double[] normales) {
@@ -169,6 +171,13 @@ public final class DatosZona {
             if (!(l3 >= 0 && l3 <= l7)) l3 = Double.NaN;
             d.reciente = new Reciente(java.time.LocalDate.parse(r.getString("hasta")),
                     r.optString("fuente", "NASA GPM IMERG"), l3, l7, l15, l30, n30, mm, normal);
+            String ini = r.optString("inicio", "");
+            if (!ini.isEmpty() && !"null".equals(ini)) {
+                java.time.LocalDate f = java.time.LocalDate.parse(ini);
+                // Solo una fecha de esta campaña y no posterior al último dato.
+                if (!f.isAfter(d.reciente.hasta) && f.isAfter(d.reciente.hasta.minusDays(366)))
+                    d.reciente.inicio = f;
+            }
         } catch (Exception ignorado) {
             // Sin lluvia medida reciente la app usa la del pack.
         }
@@ -225,8 +234,10 @@ public final class DatosZona {
         // Lo medido en los últimos 3 días, solo si el dato llega hasta anteayer o ayer.
         double medida = reciente != null && !reciente.hasta.isBefore(hoy.minusDays(2))
                 ? reciente.lluvia3 : Double.NaN;
+        java.time.LocalDate inicio = reciente != null && !reciente.hasta.isBefore(hoy.minusDays(10))
+                ? reciente.inicio : null;
         return new pe.yachayallpa.core.Decision.Pronostico(lluvia, Math.min(tres, lluvia), medida,
-                minima, frio, elevacionPronostico);
+                minima, frio, elevacionPronostico, inicio);
     }
 
     /** Los días desde hoy, para la gráfica. */

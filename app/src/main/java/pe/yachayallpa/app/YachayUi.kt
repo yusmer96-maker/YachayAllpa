@@ -778,6 +778,8 @@ private fun textoPorque(T: Idioma, m: Motivo, d: Decision): Pair<Int, String> = 
         if (d.accion == Decision.Accion.ESPERAR_LLUVIA) "porque.lluvia_poca"
         else "porque.lluvia_prevista", m.entero())
     "lluvia_medida" -> R.drawable.ic_gota to T.f("porque.lluvia_medida", m.entero())
+    "temporada" -> R.drawable.ic_gota to T.f("porque.temporada", m.entero(), m.entero2())
+    "racha_seca" -> R.drawable.ic_alerta to T["porque.racha_seca"]
     "helada_prevista" -> R.drawable.ic_helada to T.f("porque.helada_prevista", m.entero2(), m.entero())
     "cosecha_15" -> R.drawable.ic_check to T.f("porque.cosecha_15", m.entero())
     "riego" -> R.drawable.ic_gota to T.f("porque.riego", m.entero())
@@ -2281,15 +2283,20 @@ private fun VentanaRotacion(activity: YachayActivity) {
     val zona = activity.zonaViva ?: return
     val anterior = activity.cultivoAnterior ?: return
     val hoy = remember { LocalDate.now() }
-    val plan = remember(zona, activity.altura, anterior, activity.suelo, activity.prioridad,
+    // Las tres estrategias con los mismos datos: seguir igual, la rueda andina y
+    // la que cuida el agua. Así se comparan cifra con cifra.
+    val planes = remember(zona, activity.altura, anterior, activity.suelo, activity.prioridad,
         activity.siembrasSinDescanso, activity.datos) {
         val motor = MotorTemporada()
         val opciones = motor.recomendar(zona, activity.altura, anterior, activity.siembrasSinDescanso,
             activity.suelo, activity.prioridad, hoy)
         val ahora = Decision.tomar(opciones, activity.datos?.paraDecision(hoy), activity.altura, hoy)
-        PlanRotacion.armar(zona, activity.altura, anterior, activity.siembrasSinDescanso,
+        PlanRotacion.comparar(zona, activity.altura, anterior, activity.siembrasSinDescanso,
             activity.suelo, activity.prioridad, hoy, ahora, 4)
     }
+    // La andina es la recomendada: se abre en ella.
+    var elegida by remember(planes) { mutableIntStateOf(1) }
+    val plan = planes[elegida].campanas
     val alto = (LocalConfiguration.current.screenHeightDp * .92f).dp
     Dialog(onDismissRequest = { activity.ventana = null },
         properties = DialogProperties(usePlatformDefaultWidth = false)) {
@@ -2304,7 +2311,31 @@ private fun VentanaRotacion(activity: YachayActivity) {
                     }
                     BotonCerrar { activity.ventana = null }
                 }
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(10.dp))
+                // Elegir estrategia: cada pastilla lleva su cosecha media, que es la
+                // cifra con la que se comparan.
+                Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    planes.forEachIndexed { i, p ->
+                        val sel = i == elegida
+                        val forma = RoundedCornerShape(14.dp)
+                        Column(Modifier.weight(1f).fillMaxHeight().clip(forma)
+                            .background(if (sel) Tono.TIERRA.oscuro else Color.White)
+                            .border(1.dp, if (sel) Tono.TIERRA.tinta.copy(alpha = .35f) else Borde, forma)
+                            .clickable { elegida = i }
+                            .padding(horizontal = 6.dp, vertical = 7.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally) {
+                            Letra(T["estrategia." + p.estrategia.name], 11,
+                                if (sel) FontWeight.Medium else FontWeight.Normal,
+                                if (sel) Tono.TIERRA.tinta else Tinta, centrado = true, lineas = 2)
+                            Spacer(Modifier.height(2.dp))
+                            Letra(T.f("estrategia.cosecha", (p.cosechaMedia * 100).roundToInt()), 13,
+                                FontWeight.SemiBold, if (sel) Tono.TIERRA.tinta else TintaSuave,
+                                centrado = true, lineas = 1)
+                        }
+                    }
+                }
+                Spacer(Modifier.height(10.dp))
                 RuedaPlan(plan, activity.altura, hoy)
                 Spacer(Modifier.height(10.dp))
                 // La lista: de dónde parte y cada campaña con su año y su cosecha.
@@ -2316,10 +2347,50 @@ private fun VentanaRotacion(activity: YachayActivity) {
                             ?: T["plan.toda"])
                 }
                 Spacer(Modifier.height(8.dp))
+                // Qué gana y qué arriesga esta estrategia, con sus propias señales.
+                val p = planes[elegida]
+                // Si cuidar el agua coincide con la andina, se dice: no es un fallo,
+                // es que en esta chacra la rotación andina ya es la que menos agua pide.
+                val mismos = planes[1].campanas.map { it.consejo.cultivo } ==
+                    planes[2].campanas.map { it.consejo.cultivo }
+                if (mismos && elegida >= 1)
+                    FilaSenal(R.drawable.ic_gota, Tono.AGUA.tinta, T["estrategia.coinciden"])
+                // Si el cultivo no se da a esta altura, el plan sale en descanso: eso
+                // se dice, en lugar de dos señales que no explicarían nada.
+                if (p.fueraDeRango != null) {
+                    FilaSenal(R.drawable.ic_alerta, Color(0xFF9A5148),
+                        T.f("estrategia.fuera", T.cultivo(p.fueraDeRango), activity.altura))
+                    FilaSenal(R.drawable.ic_check, Verde, T["estrategia.fuera.salida"])
+                } else {
+                    FilaSenal(R.drawable.ic_check, Verde, when {
+                        p.conLeguminosa && p.conDescanso -> T["estrategia.gana.ambos"]
+                        p.conLeguminosa -> T["estrategia.gana.leguminosa"]
+                        p.conDescanso -> T["estrategia.gana.descanso"]
+                        else -> T.f("estrategia.gana.agua", p.aguaPedida.roundToInt())
+                    })
+                    FilaSenal(R.drawable.ic_alerta, Color(0xFF7B6229), when {
+                        p.repiteFamilia -> T["estrategia.riesgo.familia"]
+                        !p.conLeguminosa -> T["estrategia.riesgo.nitrogeno"]
+                        p.aguaFalta > 0 -> T.f("estrategia.riesgo.agua", p.aguaFalta.roundToInt())
+                        else -> T["estrategia.riesgo.local"]
+                    })
+                }
+                Spacer(Modifier.height(6.dp))
                 Letra(T["plan.nota"], 11, FontWeight.Normal, TintaSuave, Modifier.fillMaxWidth(),
                     centrado = true)
             }
         }
+    }
+}
+
+/** Una señal del plan: icono de color y una línea de texto. */
+@Composable
+private fun FilaSenal(icono: Int, color: Color, texto: String) {
+    Row(Modifier.fillMaxWidth().padding(bottom = 4.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        Icono(icono, 14, color)
+        Spacer(Modifier.width(7.dp))
+        Letra(texto, 12, FontWeight.Normal, Tinta, Modifier.weight(1f), lineas = 2)
     }
 }
 

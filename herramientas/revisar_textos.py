@@ -24,7 +24,7 @@ UI = RAIZ / "app/src/main/java/pe/yachayallpa/app"
 
 # Iguales en los dos idiomas a proposito: unidades, nombres propios y siglas.
 IGUALES_A_PROPOSITO = {
-    "clima.mm", "altura.ejemplo", "ubic.compacto", "decision.cosecha", "idioma.qu.corto", "idioma.qu", "cultivo.PAPA", "cultivo.PALLAR", "kusi.nombre",
+    "clima.mm", "altura.ejemplo", "ubic.compacto", "decision.cosecha", "idioma.qu.corto", "idioma.qu", "estrategia.cosecha", "cultivo.PAPA", "cultivo.PALLAR", "kusi.nombre",
     "cultivo.HABAS", "enso.nino", "enso.nina", "campana.oni", "siembra.lugar",
     "altura.zona", "mes.4", "campana.enso",
 }
@@ -91,7 +91,7 @@ def main() -> int:
 
     # Familias que el UI pide con la clave en una variable: el motor devuelve
     # "cobertura" o "rumbo_seco" y el nombre se arma al vuelo.
-    prefijos = ("mes.", "cultivo.", "motivo.", "factor.", "enso.i", "rumbo_",
+    prefijos = ("mes.", "cultivo.", "motivo.", "factor.", "enso.i", "rumbo_", "estrategia.A", "estrategia.R",
                 "nivel.", "veredicto.", "riesgo.", "sequia.", "pref.", "hacer.",
                 "voz.", "agua.", "gps.", "kusi.", "datos.error", "decision.", "dia.",
                 "porque.", "rueda.", "ubic.altura.", "ubic.fuente.", "paso.", "estado.")

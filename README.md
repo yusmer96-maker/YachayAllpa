@@ -1,98 +1,161 @@
+<div align="center">
+
 # Yachay Allpa
 
-Asesor de siembra y rotación para **las 11 provincias de Huánuco**. Funciona sin señal con 23 zonas climáticas NASA POWER precargadas. Cuando vuelve la conexión, Android programa una descarga HTTPS del CSV diario de lluvia para la zona elegida y guarda el resultado en almacenamiento privado. El GPS exacto nunca se manda a NASA: solo se consulta el centro fijo de la celda. Si el GPS no entrega altura, un mapa de relieve incluido en el APK da una estimación; el usuario puede corregirla.
+**What to plant, when, and why — NASA data for Andean farmers, offline.**
 
-```text
-NASA POWER (CSV diario, 2011–noviembre de 2026)
-       ↓
-pipeline/ (ETo FAO-56 + 15 temporadas + 23 celdas + firma)
-       ↓
-.season firmado → teléfono → core/ balance de agua y rotación
-                           ↑
-             NASA POWER HTTPS → lluvia reciente en caché privado
-                                      ↓
-                 ubicación → última siembra → 3 opciones
-                                      ↓
-                   lluvia en barras + Kusi, cuy asistente
+A crop-rotation decision tool for the 11 provinces of Huánuco, Peru.
+Built for the NASA Space Apps Challenge 2026 — *Field Shift: Adapting Farms with NASA Data*.
+
+[![License](https://img.shields.io/badge/license-Apache%202.0-315E46)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Android%208%2B-315E46)](#building-it)
+[![Data](https://img.shields.io/badge/data-NASA%20POWER%20%7C%20GPM%20IMERG%20%7C%20GIBS-7B6229)](#the-nasa-data-and-what-each-one-decides)
+[![Offline](https://img.shields.io/badge/works-offline-7B6229)](#why-offline-is-the-whole-point)
+
+<img src="entrega/capturas/1-recomendacion.png" width="230" alt="Recommendation screen">
+<img src="entrega/capturas/5-estrategias.png" width="230" alt="Three rotation strategies compared">
+<img src="entrega/capturas/4-por-que.png" width="230" alt="Why this crop: water and frost">
+<img src="entrega/capturas/3-mapa-chacra.png" width="230" alt="The field on NASA relief">
+
+</div>
+
+---
+
+## The problem
+
+In the Andes of Huánuco there is **one rain-fed season a year**. A farmer chooses what to
+sow once, and if the rain fails or the frost comes early, the year is lost. NASA has
+measured that rain for decades — but it lives in global grids, in English, behind an
+internet connection that the field does not have.
+
+Repeating the same crop season after season is the common fallback, and it is the
+expensive one: on a real field at 1,900 m, keeping the current rotation returns **61 %**
+of what the land could give, while two alternatives reach **74 %** — same field, same
+NASA data.
+
+## What it does
+
+One screen, one answer, and the numbers behind it.
+
+| | |
+|---|---|
+| **Tells you what to sow, and when** | "Plant beans this week" — or wait, or rest the land. Never a list of options with no verdict. |
+| **Compares three rotation strategies** | Keep as is · Andean rotation · Water-saving. Each with its expected harvest, what it gains and what it risks. |
+| **Shows the evidence** | Expected harvest, water gap in litres per m², frost nights out of 100, all for that exact field. |
+| **Works with no signal** | Everything heavy is precomputed. The decision runs on the phone. |
+| **Speaks the local languages** | Spanish and Quechua, with no account and no sign-up. |
+
+## How it works
+
+<div align="center">
+<img src="entrega/arquitectura.png" width="900" alt="Architecture: NASA data to server to phone">
+</div>
+
+Heavy data work runs on a small server once a day. The decision runs on the phone, so a
+farmer with no coverage still gets an answer.
+
+### Why offline is the whole point
+
+Mobile coverage in rural Huánuco is partial and expensive. So the phone never needs the
+network to decide: season packs ship inside the APK, the daily file is **1.2 KB** per
+zone, and the relief map is bundled. Once the data is on the device, a recommendation
+costs **zero bytes**.
+
+## The science behind each number
+
+<div align="center">
+<img src="entrega/calculo.png" width="900" alt="From measured rain to expected harvest">
+</div>
+
+The chain is deliberately boring and traceable:
+
+1. **Effective rain** — USDA SCS method as applied by FAO CROPWAT: `Pe = P(125 − 0.2P)/125`.
+2. **Crop demand** — FAO-56: `ETc = Kc × ETo`, with ETo corrected from the NASA cell
+   altitude to the field altitude at −6.5 °C/km.
+3. **Expected harvest** — FAO-33 (Doorenbos & Kassam, 1979):
+   `1 − Ky · (1 − ETa/ETc)`, averaged over 15 seasons, not a single year.
+4. **Start of sowing** — 25 mm over 10 days with no 7-day dry spell in the following 30
+   (Lodoun et al., 2013), measured by satellite; or 20 mm in 3 days (Sivakumar, 1988)
+   when the season has not started yet.
+5. **Frost** — nights below the crop's tolerance, with the minimum temperature corrected
+   to the field altitude.
+
+The verdict shown to the farmer is the **worst** of three: score, water and frost. It can
+never say "good option" while the water gauge says otherwise.
+
+## The NASA data, and what each one decides
+
+<div align="center">
+<img src="entrega/datos.png" width="900" alt="NASA datasets used and what each decides">
+</div>
+
+| Dataset | Role |
+|---|---|
+| [NASA POWER](https://power.larc.nasa.gov/) (MERRA-2) | 15 seasons of rain, ETo and temperature — the water balance |
+| [GPM IMERG Late](https://doi.org/10.5067/GPM/IMERGDL/DAY/07) | Rain measured up to yesterday: soil moisture at sowing, start of the rains |
+| [GPM IMERG Final](https://doi.org/10.5067/GPM/IMERG/3B-MONTH/07) | What "normal rain" means here, from the same source as the measurement |
+| [NASA GIBS](https://nasa-gibs.github.io/gibs-api-docs/) · ASTER GDEM | The offline relief map where the farmer confirms the field |
+| SRTM / GMTED (USGS, via Terrarium tiles) | Field altitude with no GPS, which shifts ETo and frost risk |
+
+POWER fills its most recent months with GEOS-IT, which is biased wet. The pipeline, the
+server and the phone all cut the series at the last reliable month and use IMERG for
+anything newer. Full citations: [SOURCES.md](SOURCES.md).
+
+## Where it works, and where local expertise comes in
+
+<div align="center">
+<img src="entrega/impacto.png" width="900" alt="Coverage of Huánuco and next steps">
+</div>
+
+The tool supports the farmer, it does not replace them. Crop coefficients, altitude ranges
+and sowing months are FAO and INIA reference values, not measured in Huánuco; an agronomist
+needs to tune them to local fields. What is already verified, and what is not, is written
+down in [REVISION_GLOBAL_2026-11-15.md](REVISION_GLOBAL_2026-11-15.md).
+
+## Repository layout
+
+```
+core/            Decision engine, plain Java 11 — no Android, fully testable
+  MotorTemporada   water balance in 10-day blocks over 15 NASA seasons
+  Decision         one action: sow, wait for rain, wait for frost, rest
+  PlanRotacion     the Andean wheel and the three strategies compared
+  Veredicto        the worst of score, water and frost
+app/             Android app, Kotlin + Jetpack Compose, Spanish and Quechua
+pipeline/        Builds and signs the season packs; full test suite
+servidor-datos/  Node.js daily job: IMERG rain, onset, forecast, one JSON per zone
+herramientas/    Python helpers: NASA tiles, text checker, crop artwork
+entrega/         Figures and screenshots used in the submission
 ```
 
-La app Android usa **Kotlin + Jetpack Compose** en una sola vista. Ubicación, último cultivo, tres opciones y lluvia quedan visibles en la misma página; idioma, provincia, altura, catálogo, preferencias, razones y gráfico se abren como ventanas desplazables. Onest es la única familia tipográfica, con cinco pesos en `app/src/main/res/font/onest.xml`. Las láminas botánicas de los tubérculos tienen fondo transparente. `core/` y `pipeline/` siguen en Java 11; la app reutiliza el mismo motor y los packs firmados.
+## Building it
 
-## Dos cálculos en el mismo `core/`
+```bash
+# Tests for the engine (no Android needed)
+JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 ./gradlew :pipeline:pruebas
 
-El motor mensual inicial sigue disponible para probar la rotación tradicional y la deriva entre 1991–2005 y 2011–2025. **La app usa el motor de temporada nuevo**. El primero conserva estas reglas:
-
-| Regla mensual | Peso |
-|---|---:|
-| Agua del ciclo | 30 |
-| Altitud | 20 |
-| Helada | 20 |
-| Rotación andina | 30 |
-
-El motor activo usa 15 temporadas agrícolas 2011–2025. Divide cada una en bloques de diez días, calcula ETo por FAO-56 Penman-Monteith a partir de NASA POWER, estima demanda del cultivo `ETc=Kc×ETo`, y sigue una reserva de agua del suelo durante germinación, floración y maduración. Si se siembra hoy y el archivo es reciente, la lluvia observada de 15 días inicia **una estimación** de la reserva; no equivale a humedad de suelo medida. También corrige Tmin por altitud y cuenta años con estrés de agua o helada.
-
-| Componente activo | Peso base |
-|---|---:|
-| Cobertura de agua por etapas | 35 |
-| Riesgo de helada | 20 |
-| Aptitud de altura | 20 |
-| Rotación y nitrógeno | 25 |
-
-La prioridad elegida en Preferencias ajusta el resultado; descansar se modela aparte. Lo que se pinta, lo que se dice y lo que se lee en voz alta salen de un **único veredicto** (`core/Veredicto.java`), que es el menor de tres niveles: puntaje, agua y helada. Por eso una opción no puede aparecer como «muy buena» encima de una barra roja, y la primera opción no puede salir peor que las dos alternativas que lleva al lado: el mismo veredicto ordena la lista. El agua se juzga por la **cobertura media de la demanda del ciclo**, y la helada contra lo que aguanta ese cultivo. La prueba `coherenciaDelVeredicto` de `pipeline` barre alturas y cultivos y falla si aparece una sola contradicción. La lluvia reciente se compara con las mismas fechas de 15 años. «El agua suele alcanzar» significa que el balance modelado cubrió la demanda hídrica completa en al menos 10 de 15 temporadas históricas; la tarjeta muestra el conteo. Son **escenarios históricos, no un pronóstico** de esta campaña. La cifra grande de lluvia suma 30 días; la ventana Clima muestra seis semanas separadas. La fecha y procedencia se ven en esa ventana.
-
-## Cobertura de Huánuco
-
-Las 23 celdas cubren las 11 provincias usando límites provinciales de geoBoundaries y el [geoservidor MINAM](https://geoservidorperu.minam.gob.pe/arcgis/rest/services/ZEE_VISOR/13_CARTOGRAFIA_BASE_HUANUCO/MapServer/layers) como contraste. Un archivo local de límites provinciales permite al GPS identificar las 11 provincias sin enviar ubicación. Si el teléfono entrega coordenadas sin altura, 25 teselas de relieve Terrarium incluidas en el APK estiman una altura aproximada, redondeada a 50 m. NASA POWER trabaja con celdas meteorológicas de 0,5° × 0,625°; **la lluvia de la celda no es la lluvia medida en una chacra**. Las series descargadas para esta entrega llegan al 11 de noviembre de 2026. El CSV original y la URL exacta quedan en `datos/nasa/`; cada `.season` está firmado.
-
-El catálogo modela 24 opciones de campaña de sierra y zonas bajas; arroz y avena se añadieron tras contrastarlo con la superficie sembrada oficial de Huánuco (INEI, Compendio Estadístico 2025, cuadro 12.2; ver `ANALISIS_CALCULOS.md`). Incluye papa, oca, olluco, mashua, camote, yacón, arracacha y yuca, además de quinua, maíz, cebada, habas, tarwi, arveja, frijol, pallar, trigo, maní, kiwicha y calabaza, registradas en una [feria campesina de Huánuco documentada por SENASA](https://www.senasa.gob.pe/senasacontigo/minagri-mas-de-600-variedades-de-papas-nativas-se-expondran-en-feria-campesina-de-huanuco/). [INIA](https://repositorio.inia.gob.pe/bitstreams/3b20bfe9-ad39-46da-828e-9b11b7688a54/download) también prioriza cacao, café y plátano; son perennes y el modelo de rotación de campaña no los evalúa. **La presencia regional de un cultivo no demuestra su aptitud en una chacra concreta**.
-
-## Compilar y actualizar
-
-JDK 21, Android SDK 35 y Gradle wrapper. El código de `core/` y `pipeline/` sigue compilándose con Java 11. La primera compilación descarga Kotlin y AndroidX; las siguientes pueden usar `--offline`.
-
-```sh
-JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 ./gradlew :pipeline:pruebas :app:assembleDebug
-JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 ./gradlew :pipeline:run --args='actualizar /ruta/llaves/privada.key /ruta/datos/nasa'
-aapt dump permissions app/build/outputs/apk/debug/app-debug.apk
-adb install -r app/build/outputs/apk/debug/app-debug.apk
+# Debug APK
+JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 ANDROID_HOME=/usr/lib/android-sdk \
+  ./gradlew :app:assembleDebug
 ```
 
-Para un CSV ya descargado, agregue `[dirCsvLocal]` al comando `actualizar`; los nombres esperados son `zona_01-2011-reciente.csv` hasta `zona_23-2011-reciente.csv`, además de los seis centros iniciales. El comando `construir` conserva los `.pack` mensuales iniciales. `llaves <dir>` crea una pareja ECDSA P-256 sin sobrescribir la privada. Al usar `:pipeline:run`, las rutas relativas se resuelven desde `pipeline/`; use rutas absolutas como en el ejemplo.
+The server job needs Node.js 18+ and a free [NASA Earthdata](https://urs.earthdata.nasa.gov/)
+token in `servidor-datos/.earthdata` (never committed).
 
-Sin Gradle, el motor, pipeline y pruebas se ejecutan así:
-
-```sh
-mkdir -p out
-find core/src/main/java pipeline/src/main/java pipeline/src/test/java -name '*.java' > fuentes.txt
-javac --release 11 -d out @fuentes.txt
-java -cp out pe.yachayallpa.pipeline.Pruebas
-java -cp out pe.yachayallpa.pipeline.Main actualizar /ruta/llaves/privada.key /ruta/datos/nasa
+```bash
+cd servidor-datos && DATOS_DIR=/path/to/data node actualizar.js
 ```
 
-El APK requiere Android SDK/Gradle y dependencias oficiales Kotlin/AndroidX Compose. `core/` y `pipeline/` no incorporan librerías de terceros. La licencia es Apache 2.0.
+## Data integrity
 
-## Packs, ubicación y voz
+Season packs are signed with **ECDSA P-256** and verified on the device before use: a
+tampered pack is rejected, so bad data cannot reach a farmer's decision. The app sends
+nothing about the farmer or the field anywhere — GPS stays on the phone, and only the
+fixed centre of the NASA grid cell is ever used to fetch data.
 
-`.pack` y `.season` son texto UTF-8 canónico, máximo 64 KB, firmados con ECDSA P-256/SHA-256. El verificador comprueba la firma **antes de interpretar cifras**, también para archivos dentro del APK. Un archivo firmado con versión anterior a la instalada se rechaza. La llave privada no se incluye en el APK. La actualización directa de lluvia llega por HTTPS y se valida contra la ubicación de la celda; **no está firmada con nuestra llave**, por lo que se conserva separada de las series históricas firmadas. El caché se limita a 2 MB. El APK declara `INTERNET` para esta función; por ello ya no corresponde afirmar que sea incapaz de conectarse. El GPS se usa en memoria para provincia, celda y altura redondeada a 10 m. Si solo entrega coordenadas, el relieve offline aporta una altura aproximada redondeada a 50 m. La posición exacta no se guarda ni se envía; Android conserva temporalmente el identificador de la zona para el trabajo programado.
+## Credits and licence
 
-La app se lee entera en **castellano o en quechua de Huánuco**: el idioma se pregunta al abrirla y se cambia en Ajustes. Todo el texto vive en una sola tabla bilingüe (`app/src/main/java/pe/yachayallpa/app/Textos.kt`) y el motor no lleva frases dentro: devuelve claves con sus cifras y la app las escribe. `herramientas/revisar_textos.py` comprueba que las dos tablas cuadren en claves y en huecos de formato. El quechua está pendiente de revisión con hablantes de Huánuco, y la propia ventana de idioma lo dice.
+Code and documentation under [Apache 2.0](LICENSE). Every dataset, method and font used is
+listed with its licence in [SOURCES.md](SOURCES.md). Detailed engineering notes (in
+Spanish) are in [DOCUMENTACION.md](DOCUMENTACION.md) and [ANALISIS_CALCULOS.md](ANALISIS_CALCULOS.md).
 
-Kusi **habla solo en castellano**, con el lector de voz del teléfono (Android TTS), y lee exactamente la frase que está escrita; en quechua no se muestra el altavoz. No hay servidor de voz ni claves de terceros en el APK: se quitó Fish Audio el 15-nov-2026. Ver `ARQUITECTURA_VOZ_KUSI.md`.
-
-## Lo que no hace
-
-Es una guía para **secano**. No considera riego, humedad de suelo medida, plagas, variedades, mercado o pronóstico meteorológico. El suelo elegido en Mi chacra ajusta una capacidad estimada, no medida. Los `Kc`, rangos de altura, duración, calendario y tolerancia al frío son orientativos y **deben validarse con agricultores y un agrónomo local**. El gradiente térmico fijo y la normal de Tmin pueden fallar en valles y microclimas. Los límites provinciales offline son simplificados. La renovación directa refresca lluvia observada y gráfico, no vuelve a calcular Tmin ni ETo históricos. Si la lluvia queda desactualizada o NASA no responde, la app usa la última serie válida e indica su fecha. A escala de muchos teléfonos, las peticiones directas repetidas a una misma celda pueden saturar POWER: un VPS que descargue una vez por celda y distribuya packs firmados sería la evolución adecuada.
-
-## Mapa de la chacra
-
-La ventana "Tu chacra está aquí" muestra un mapa que se mueve, se acerca y se aleja (dedos, doble toque o botones + y −). Es el relieve sombreado **ASTER GDEM (NASA/METI)** servido por **NASA GIBS**, teñido por altura con la paleta de la app y guardado dentro del APK: 426 teselas, niveles 8 a 11 (unos 76 m por píxel), 7 MB. Funciona sin señal y la posición no sale del teléfono. Se regenera con `python3 -I herramientas/teselas_nasa.py` (las teselas crudas quedan en `datos/gibs/`).
-
-## Pendiente (15-nov-2026)
-
-- El quechua de la tabla bilingüe necesita revisión de hablantes de Huánuco; la estructura ya está completa y comprobada por script.
-- `MainActivity.java`, `CultivoLamina.java` y `LluviaGrafico.java` son la pantalla vieja de Views: no se lanzan y quedan excluidos de la compilación en `app/build.gradle`.
-- `Voz.java` y `EnsoRepositorio.java` quedaron sin uso (Kusi solo escribe; sin barra de El Niño) y están excluidos de la compilación, pendientes de borrar.
-- `servidor-datos/` está desplegado: publica índices (solo MERRA-2) y el pronóstico de 7 días que la app usa en la recomendación.
-- SENAMHI: pendiente de una cuenta IRI para PISCO (ver `ANALISIS_CALCULOS.md`).
-
-Véase [SOURCES.md](SOURCES.md) para las fuentes y la tabla de parámetros pendiente de validar.
+Team **HenDx** · NASA Space Apps Challenge 2026 · Huánuco, Peru.

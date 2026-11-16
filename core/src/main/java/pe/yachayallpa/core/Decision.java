@@ -17,14 +17,16 @@ import java.util.List;
  *     recomienda descansar.
  *  2. Si la fecha buena de ese cultivo está a más de 30 días, se dice el mes.
  *  3. Si toca sembrar ahora y hay pronóstico: helada prevista en la chacra
- *     (mínima corregida por altura) → esperar; si no hay 20 mm en 3 días seguidos
- *     (medidos en los últimos 3 días o pronosticados) → esperar la lluvia; si no,
- *     sembrar esta semana.
+ *     (mínima corregida por altura) → esperar. Si las lluvias de esta campaña ya
+ *     empezaron (medido por satélite), la tierra está húmeda: sembrar, salvo que
+ *     vengan 7 días secos seguidos, que es esperar. Si aún no empezaron, el inicio
+ *     es 20 mm en 3 días seguidos, medidos o pronosticados; si no, esperar.
  *  4. Sin pronóstico, se recomienda sembrar cuando la tierra esté húmeda.
  *
- * Inicio de siembra: criterio de Sivakumar (1988, Agric. For. Meteorol. 42:295-305),
- * 20 mm acumulados en 3 días seguidos, el más usado para el inicio de la campaña en
- * secano. Helada: 0 °C (-2 °C para cultivos que aguantan frío).
+ * Inicio de las lluvias de la campaña (lo calcula el VPS con IMERG): 25 mm en 10
+ * días sin racha seca de 7 días en los 30 siguientes, Lodoun et al. (2013). Inicio
+ * en el día, si aún no empezaron: 20 mm en 3 días seguidos, Sivakumar (1988, Agric.
+ * For. Meteorol. 42: 295-305). Helada: 0 °C (-2 °C para cultivos que aguantan frío).
  */
 public final class Decision {
     public enum Accion { SEMBRAR_YA, SEMBRAR_CUANDO_LLUEVA, ESPERAR_LLUVIA, ESPERAR_HELADA,
@@ -33,15 +35,25 @@ public final class Decision {
     /** Lluvia en 3 días seguidos que marca el inicio de la siembra (Sivakumar, 1988). */
     public static final double LLUVIA_INICIO_3D = 20;
 
+    /** Una semana de pronóstico con menos de esto es una racha seca: 1 mm, como en Lodoun et al. */
+    public static final double DIAS_SECOS_MM = 1;
+
     /** Pronóstico de 7 días a la altura de la celda NASA. */
     public static final class Pronostico {
         /** lluvia3: los 3 días seguidos más lluviosos del pronóstico. medida3: lo medido
          *  por satélite en los últimos 3 días (NaN si no hay dato fresco). */
         public final double lluvia7, lluvia3, medida3, tminMinima, elevacionCelda;
         public final LocalDate diaMasFrio;
+        /** Día en que empezaron las lluvias de esta campaña (IMERG); null si aún no. */
+        public final LocalDate inicioLluvias;
 
         public Pronostico(double lluvia7, double lluvia3, double medida3, double tminMinima,
                           LocalDate diaMasFrio, double elevacionCelda) {
+            this(lluvia7, lluvia3, medida3, tminMinima, diaMasFrio, elevacionCelda, null);
+        }
+
+        public Pronostico(double lluvia7, double lluvia3, double medida3, double tminMinima,
+                          LocalDate diaMasFrio, double elevacionCelda, LocalDate inicioLluvias) {
             if (!Double.isFinite(lluvia7) || lluvia7 < 0 || !Double.isFinite(lluvia3) || lluvia3 < 0
                     || lluvia3 > lluvia7 + 1e-9 || (Double.isFinite(medida3) && medida3 < 0)
                     || !Double.isFinite(tminMinima)
@@ -53,6 +65,7 @@ public final class Decision {
             this.tminMinima = tminMinima;
             this.diaMasFrio = diaMasFrio;
             this.elevacionCelda = elevacionCelda;
+            this.inicioLluvias = inicioLluvias;
         }
     }
 
@@ -102,6 +115,17 @@ public final class Decision {
         if (tminChacra <= umbral) {
             porque.add(0, new Motivo("helada_prevista", tminChacra, p.diaMasFrio.getDayOfMonth()));
             return new Decision(Accion.ESPERAR_HELADA, mejor, porque);
+        }
+        // La temporada ya empezó: la tierra está húmeda y no hace falta esperar otro
+        // aguacero. Solo se espera si el pronóstico trae una semana entera seca.
+        if (p.inicioLluvias != null && !p.inicioLluvias.isAfter(hoy)) {
+            if (p.lluvia7 < DIAS_SECOS_MM) {
+                porque.add(0, new Motivo("racha_seca", p.lluvia7));
+                return new Decision(Accion.ESPERAR_LLUVIA, mejor, porque);
+            }
+            porque.add(0, new Motivo("temporada", p.inicioLluvias.getDayOfMonth(),
+                    p.inicioLluvias.getMonthValue()));
+            return new Decision(Accion.SEMBRAR_YA, mejor, porque);
         }
         // Lo que ya cayó cuenta igual que lo que viene: la tierra ya está húmeda.
         if (Double.isFinite(p.medida3) && p.medida3 >= LLUVIA_INICIO_3D) {

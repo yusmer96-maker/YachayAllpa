@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="1180" viewBox="0 0 2400 1180" font-family="DejaVu Sans, Arial, sans-serif">
+  <rect width="2400" height="1180" fill="#F8F7F3"/>
+  <text x="90" y="80" font-size="30" font-weight="600" fill="#7B6229" letter-spacing="3">WHAT EACH NASA DATASET DECIDES</text>
+
+  <!-- Cabecera de tabla -->
+  <text x="90" y="160" font-size="25" font-weight="600" fill="#5C625C">DATASET</text>
+  <text x="700" y="160" font-size="25" font-weight="600" fill="#5C625C">RESOLUTION &amp; PERIOD</text>
+  <text x="1320" y="160" font-size="25" font-weight="600" fill="#5C625C">WHAT IT DECIDES IN THE APP</text>
+  <text x="2060" y="160" font-size="25" font-weight="600" fill="#5C625C">SIZE</text>
+  <line x1="90" y1="182" x2="2310" y2="182" stroke="#315E46" stroke-width="3"/>
+
+  <!-- Fila 1 -->
+  <text x="90" y="250" font-size="36" font-weight="600" fill="#1F2A24">NASA POWER</text>
+  <text x="90" y="292" font-size="25" fill="#5C625C">MERRA-2 reanalysis, daily</text>
+  <text x="700" y="250" font-size="28" fill="#1F2A24">0.5° × 0.625° · 1981–2026</text>
+  <text x="700" y="292" font-size="25" fill="#5C625C">16,709 days per cell · 23 cells</text>
+  <text x="1320" y="250" font-size="28" fill="#1F2A24">The 15-season water balance:</text>
+  <text x="1320" y="292" font-size="25" fill="#5C625C">rain, ETo, min/max temperature</text>
+  <text x="2060" y="250" font-size="28" fill="#315E46">25 MB raw</text>
+  <text x="2060" y="292" font-size="25" fill="#5C625C">372 KB signed</text>
+  <line x1="90" y1="330" x2="2310" y2="330" stroke="#E4E1D8" stroke-width="2"/>
+
+  <!-- Fila 2 -->
+  <text x="90" y="398" font-size="36" font-weight="600" fill="#1F2A24">GPM IMERG Late</text>
+  <text x="90" y="440" font-size="25" fill="#5C625C">satellite rain, daily</text>
+  <text x="700" y="398" font-size="28" fill="#1F2A24">0.1° · one day behind</text>
+  <text x="700" y="440" font-size="25" fill="#5C625C">119 days kept, Sep to today</text>
+  <text x="1320" y="398" font-size="28" fill="#1F2A24">Soil moisture at sowing, and the</text>
+  <text x="1320" y="440" font-size="25" fill="#5C625C">date the rains started this season</text>
+  <text x="2060" y="398" font-size="28" fill="#315E46">~15 KB/day</text>
+  <text x="2060" y="440" font-size="25" fill="#5C625C">Huánuco subset only</text>
+  <line x1="90" y1="478" x2="2310" y2="478" stroke="#E4E1D8" stroke-width="2"/>
+
+  <!-- Fila 3 -->
+  <text x="90" y="546" font-size="36" font-weight="600" fill="#1F2A24">GPM IMERG Final</text>
+  <text x="90" y="588" font-size="25" fill="#5C625C">gauge-adjusted, monthly</text>
+  <text x="700" y="546" font-size="28" fill="#1F2A24">0.1° · 15 years per month</text>
+  <text x="700" y="588" font-size="25" fill="#5C625C">180 months, 2010–2025</text>
+  <text x="1320" y="546" font-size="28" fill="#1F2A24">What "normal rain" means here, so</text>
+  <text x="1320" y="588" font-size="25" fill="#5C625C">measured and normal share a source</text>
+  <text x="2060" y="546" font-size="28" fill="#315E46">3 KB stored</text>
+  <text x="2060" y="588" font-size="25" fill="#5C625C">computed once</text>
+  <line x1="90" y1="626" x2="2310" y2="626" stroke="#E4E1D8" stroke-width="2"/>
+
+  <!-- Fila 4 -->
+  <text x="90" y="694" font-size="36" font-weight="600" fill="#1F2A24">GIBS · ASTER GDEM</text>
+  <text x="90" y="736" font-size="25" fill="#5C625C">shaded relief tiles</text>
+  <text x="700" y="694" font-size="28" fill="#1F2A24">zoom 8–11 · 426 tiles</text>
+  <text x="700" y="736" font-size="25" fill="#5C625C">bundled in the app, never fetched</text>
+  <text x="1320" y="694" font-size="28" fill="#1F2A24">The map where the farmer confirms</text>
+  <text x="1320" y="736" font-size="25" fill="#5C625C">the field is really theirs — offline</text>
+  <text x="2060" y="694" font-size="28" fill="#315E46">7.6 MB</text>
+  <text x="2060" y="736" font-size="25" fill="#5C625C">inside the APK</text>
+  <line x1="90" y1="774" x2="2310" y2="774" stroke="#E4E1D8" stroke-width="2"/>
+
+  <!-- Fila 5 -->
+  <text x="90" y="842" font-size="36" font-weight="600" fill="#1F2A24">SRTM / GMTED</text>
+  <text x="90" y="884" font-size="25" fill="#5C625C">USGS elevation, via Terrarium</text>
+  <text x="700" y="842" font-size="28" fill="#1F2A24">25 tiles over Huánuco</text>
+  <text x="700" y="884" font-size="25" fill="#5C625C">read on the device</text>
+  <text x="1320" y="842" font-size="28" fill="#1F2A24">Field altitude without GPS, which</text>
+  <text x="1320" y="884" font-size="25" fill="#5C625C">shifts ETo and frost risk</text>
+  <text x="2060" y="842" font-size="28" fill="#315E46">2.1 MB</text>
+  <text x="2060" y="884" font-size="25" fill="#5C625C">inside the APK</text>
+  <line x1="90" y1="922" x2="2310" y2="922" stroke="#315E46" stroke-width="3"/>
+
+  <!-- Resultado -->
+  <text x="90" y="1000" font-size="34" font-weight="600" fill="#315E46">All of it reaches the farmer as a 1.2 KB file per zone, once a day.</text>
+  <text x="90" y="1048" font-size="28" fill="#5C625C">A season of data costs less than a photo message. Open-Meteo adds the 7-day forecast; it is the only non-NASA source.</text>
+  <text x="90" y="1096" font-size="28" fill="#5C625C">Every dataset is open and cited in the repository. Nothing about the farmer or the field is ever uploaded.</text>
+</svg>

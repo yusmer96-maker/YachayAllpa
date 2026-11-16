@@ -142,7 +142,9 @@ async function actualizar(rutaCache, zonas, hoy, dias) {
     if (cache[f]) continue;
     try {
       const dia = await unDia(f, zonas, tk);
-      if (dia) { cache[f] = dia; nuevos++; }
+      // Se guarda cada dia nada mas bajarlo: si se corta, no se pierde lo hecho
+      // y el progreso se puede mirar desde fuera.
+      if (dia) { cache[f] = dia; nuevos++; fs.writeFileSync(rutaCache, JSON.stringify(cache)); }
     } catch (e) {
       console.error(`IMERG ${f}: ${e.message}`);
     }
