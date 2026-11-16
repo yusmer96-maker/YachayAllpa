@@ -1,6 +1,15 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.jetbrains.kotlin.android'
 apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+// La firma de release se lee de un fichero FUERA del repositorio, indicado por
+// YACHAY_SIGNING_PROPERTIES. Sin ese fichero, assembleRelease sale sin firmar y
+// assembleDebug sigue funcionando igual: el repositorio no guarda ninguna clave.
+def firmaProps = new Properties()
+def firmaRuta = System.getenv('YACHAY_SIGNING_PROPERTIES')
+if (firmaRuta && file(firmaRuta).exists()) {
+    file(firmaRuta).withInputStream { firmaProps.load(it) }
+}
+
 android {
     namespace 'pe.yachayallpa.app'
     compileSdk 35
@@ -9,12 +18,23 @@ android {
     compileOptions { sourceCompatibility JavaVersion.VERSION_11; targetCompatibility JavaVersion.VERSION_11 }
     kotlinOptions { jvmTarget = '11' }
     buildFeatures { compose true }
-    // La pantalla vieja de Views (MainActivity y sus dos ayudantes) ya no se
-    // lanza: el manifiesto arranca YachayActivity. Se conserva como referencia,
-    // pero no se compila, porque usa la voz por eventos que se retiro con Fish.
-    // Voz.java (Kusi ya solo escribe) y EnsoRepositorio.java (sin barra de El Niño)
-    // quedaron sin uso el 15-nov-2026; pendientes de borrar.
-    sourceSets { main { java { exclude '**/MainActivity.java', '**/CultivoLamina.java', '**/LluviaGrafico.java', '**/Voz.java', '**/EnsoRepositorio.java' } } }
+    signingConfigs {
+        release {
+            if (firmaProps['storeFile']) {
+                storeFile file(firmaProps['storeFile'])
+                storePassword firmaProps['storePassword']
+                keyAlias firmaProps['keyAlias']
+                keyPassword firmaProps['keyPassword']
+            }
+        }
+    }
+    buildTypes {
+        release {
+            // Sin ofuscar: el jurado debe poder leer y reproducir el codigo.
+            minifyEnabled false
+            signingConfig firmaProps['storeFile'] ? signingConfigs.release : null
+        }
+    }
 }
 dependencies {
     implementation project(':core')

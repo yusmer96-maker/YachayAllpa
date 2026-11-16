@@ -12,9 +12,9 @@ Built for the NASA Space Apps Challenge 2026 — *Field Shift: Adapting Farms wi
 [![Data](https://img.shields.io/badge/data-NASA%20POWER%20%7C%20GPM%20IMERG%20%7C%20GIBS-7B6229)](#the-nasa-data-and-what-each-one-decides)
 [![Offline](https://img.shields.io/badge/works-offline-7B6229)](#why-offline-is-the-whole-point)
 
-<img src="entrega/capturas/1-recomendacion.png" width="250" alt="Recommendation screen">
-<img src="entrega/capturas/5-estrategias.png" width="250" alt="Three rotation strategies compared">
-<img src="entrega/capturas/4-por-que.png" width="250" alt="Why this crop: water and frost">
+<img src="docs/img/1-recomendacion.png" width="250" alt="Recommendation screen">
+<img src="docs/img/5-estrategias.png" width="250" alt="Three rotation strategies compared">
+<img src="docs/img/4-por-que.png" width="250" alt="Why this crop: water and frost">
 
 </div>
 
@@ -47,7 +47,7 @@ One screen, one answer, and the numbers behind it.
 ## How it works
 
 <div align="center">
-<img src="entrega/arquitectura.png" width="900" alt="Architecture: NASA data to server to phone">
+<img src="docs/img/arquitectura.png" width="900" alt="Architecture: NASA data to server to phone">
 </div>
 
 Heavy data work runs on a small server once a day. The decision runs on the phone, so a
@@ -63,7 +63,7 @@ costs **zero bytes**.
 ## The science behind each number
 
 <div align="center">
-<img src="entrega/calculo.png" width="900" alt="From measured rain to expected harvest">
+<img src="docs/img/calculo.png" width="900" alt="From measured rain to expected harvest">
 </div>
 
 The chain is deliberately boring and traceable:
@@ -85,7 +85,7 @@ never say "good option" while the water gauge says otherwise.
 ## The NASA data, and what each one decides
 
 <div align="center">
-<img src="entrega/datos.png" width="900" alt="NASA datasets used and what each decides">
+<img src="docs/img/datos.png" width="900" alt="NASA datasets used and what each decides">
 </div>
 
 | Dataset | Role |
@@ -103,7 +103,7 @@ anything newer. Full citations: [SOURCES.md](SOURCES.md).
 ## Where it works, and where local expertise comes in
 
 <div align="center">
-<img src="entrega/impacto.png" width="900" alt="Coverage of Huánuco and next steps">
+<img src="docs/img/impacto.png" width="900" alt="Coverage of Huánuco and next steps">
 </div>
 
 The tool supports the farmer, it does not replace them. Crop coefficients, altitude ranges
@@ -121,8 +121,8 @@ core/            Decision engine, plain Java 11 — no Android, fully testable
 app/             Android app, Kotlin + Jetpack Compose, Spanish and Quechua
 pipeline/        Builds and signs the season packs; full test suite
 servidor-datos/  Node.js daily job: IMERG rain, onset, forecast, one JSON per zone
-herramientas/    Python helpers: NASA tiles, text checker, crop artwork
-entrega/         Figures and screenshots used in the submission
+herramientas/    Python helpers: download the NASA relief tiles, check the translations
+docs/img/        Figures and screenshots used in this README
 ```
 
 ## Building it
