@@ -1,0 +1,11 @@
+<resources>
+    <color name="icon_background">#F8F7F3</color>
+    <style name="Theme.YachayAllpa" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/icon_background</item>
+        <item name="android:colorAccent">#3B6958</item>
+        <item name="android:statusBarColor">@color/icon_background</item>
+        <item name="android:navigationBarColor">@color/icon_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+</resources>

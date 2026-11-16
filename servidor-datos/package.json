@@ -1,0 +1,8 @@
+{
+  "name": "yachay-datos",
+  "version": "1.0.0",
+  "description": "Lluvia medida por satelite (NASA GPM IMERG) y pronostico Open-Meteo por zona, una vez al dia. Sin dependencias.",
+  "private": true,
+  "main": "actualizar.js",
+  "license": "Apache-2.0"
+}

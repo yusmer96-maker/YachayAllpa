@@ -1,0 +1,12 @@
+<resources>
+    <style name="Theme.YachayAllpa" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/icon_background</item>
+        <item name="android:colorAccent">#3B6958</item>
+        <item name="android:statusBarColor">@color/icon_background</item>
+        <item name="android:navigationBarColor">@color/icon_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowSplashScreenBackground">@color/icon_background</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher</item>
+    </style>
+</resources>

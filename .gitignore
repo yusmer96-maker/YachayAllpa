@@ -1,0 +1,24 @@
+.gradle/
+**/build/
+local.properties
+*.iml
+privada.key
+**/privada.key
+llaves/
+**/llaves/
+out/
+fuentes.txt
+.idea/
+*.log
+# Secretos del servidor de voz: el .env (clave Fish, token) y la cache nunca se suben.
+.env
+**/.env
+servidor-voz/voz-cache/
+node_modules/
+
+# Pesados que no hacen falta para construir la app:
+# el APK (va como descarga del release), las teselas ya copiadas en assets/mapa
+# y las laminas de origen de los dibujos (los cultivo_*.png recortados si van).
+artifacts/
+datos/gibs/
+datos/laminas-origen/

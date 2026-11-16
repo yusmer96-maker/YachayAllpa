@@ -1,0 +1,17 @@
+YACHAY-PACK/1
+version=20261114
+distrito=Pillco Marca
+lat=-9.96
+lon=-76.25
+altitudReferencia=1950.00
+elevacionCelda=3404.48
+fuente=https://power.larc.nasa.gov/api/temporal/daily/point?parameters=PRECTOTCORR,T2M_MIN&community=AG&longitude=-76.25000&latitude=-9.96000&start=19910101&end=20051231&format=CSV | https://power.larc.nasa.gov/api/temporal/daily/point?parameters=PRECTOTCORR,T2M_MIN&community=AG&longitude=-76.25000&latitude=-9.96000&start=20110101&end=20251231&format=CSV
+ahora.periodo=2011-2025
+ahora.lluvia=91.85,89.23,86.98,44.46,41.46,33.56,25.87,22.07,22.52,53.83,68.09,102.77
+ahora.tmin=6.53,6.57,6.60,6.36,5.73,4.37,3.58,4.54,5.89,6.46,6.64,6.68
+ahora.desviacion=1.05,1.02,0.98,1.14,1.45,1.85,2.07,1.93,1.40,1.12,1.16,1.06
+antes.periodo=1991-2005
+antes.lluvia=83.93,91.35,98.74,45.65,33.64,18.12,14.05,15.57,32.14,52.47,75.12,89.17
+antes.tmin=6.20,6.20,6.17,5.91,5.26,4.20,3.52,3.99,5.43,5.95,6.04,6.24
+antes.desviacion=0.95,0.94,0.92,0.95,1.16,1.50,1.72,1.83,1.05,1.00,1.09,0.95
+firma=MEUCIQDBe/gAXaNttPBQ3DfQF8VrepUxA8OgQXoVRWA1Zbcq6wIgNYqV2Qi4bl3TGmQljR6nu/asYNeldCwm1yLRzxPnWsY=

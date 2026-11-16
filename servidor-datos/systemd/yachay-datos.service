@@ -1,0 +1,19 @@
+[Unit]
+Description=YachayAllpa: lluvia medida (NASA GPM IMERG) y pronostico diario por zona
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=yachay
+Group=yachay
+WorkingDirectory=/opt/yachayallpa/servidor-datos
+Environment=DATOS_DIR=/opt/yachayallpa/datos
+ExecStart=/usr/bin/node actualizar.js
+TimeoutStartSec=5400
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/yachayallpa/datos

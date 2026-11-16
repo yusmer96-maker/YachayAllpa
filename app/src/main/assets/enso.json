@@ -1,0 +1,12 @@
+{
+  "_fuente": "NOAA CPC. ONI (oni.ascii.txt) y ENSO Diagnostic Discussion del 12-nov-2026 (Aviso de El Nino). Dato global, sin coordenadas. Es tendencia estacional, no pronostico de chacra.",
+  "fase": "EL_NINO",
+  "oni": 2.46,
+  "temporada": "ASO 2026",
+  "alerta": "Aviso de El Nino",
+  "tendencia": 1,
+  "fecha": "2026-11-12",
+  "fuente": "NOAA CPC",
+  "prob_el_nino_proximas": 100,
+  "nota": "El Nino fuerte a muy fuerte probable hasta enero-marzo 2027; luego debilitando."
+}

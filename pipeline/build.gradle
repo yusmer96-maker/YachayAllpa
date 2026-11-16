@@ -1,0 +1,10 @@
+plugins { id 'application' }
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+dependencies { implementation project(':core') }
+application { mainClass = 'pe.yachayallpa.pipeline.Main' }
+tasks.register('pruebas', JavaExec) {
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'pe.yachayallpa.pipeline.Pruebas'
+    dependsOn testClasses
+}

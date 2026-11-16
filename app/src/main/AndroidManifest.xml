@@ -1,0 +1,17 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- La red solo trae lluvia de la celda NASA escogida; el GPS exacto no sale del teléfono. -->
+    <!-- Verificable con: aapt dump permissions app-release.apk -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- JobScheduler exige este permiso para esperar una conexión disponible. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
+    <application android:label="Yachay Allpa" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:theme="@style/Theme.YachayAllpa" android:usesCleartextTraffic="false" android:allowBackup="false">
+        <service android:name=".ActualizacionNasa" android:permission="android.permission.BIND_JOB_SERVICE" android:exported="true" />
+        <activity android:name=".YachayActivity" android:exported="true">
+            <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
+        </activity>
+    </application>
+</manifest>

@@ -1,0 +1,10 @@
+[Unit]
+Description=Actualiza a diario los indices de YachayAllpa con NASA POWER
+
+[Timer]
+OnCalendar=*-*-* 09:30:00 UTC
+RandomizedDelaySec=1800
+Persistent=true
+
+[Install]
+WantedBy=timers.target
