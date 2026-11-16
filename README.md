@@ -108,8 +108,7 @@ anything newer. Full citations: [SOURCES.md](SOURCES.md).
 
 The tool supports the farmer, it does not replace them. Crop coefficients, altitude ranges
 and sowing months are FAO and INIA reference values, not measured in Huánuco; an agronomist
-needs to tune them to local fields. Which parts are verified, and against what, is set out
-in [ANALISIS_CALCULOS.md](ANALISIS_CALCULOS.md).
+needs to tune them to local fields. The three next steps are listed in the figure above.
 
 ## Repository layout
 
@@ -153,8 +152,9 @@ fixed centre of the NASA grid cell is ever used to fetch data.
 
 ## Credits and licence
 
-Code and documentation under [Apache 2.0](LICENSE). Every dataset, method and font used is
-listed with its licence in [SOURCES.md](SOURCES.md). Detailed engineering notes (in
-Spanish) are in [DOCUMENTACION.md](DOCUMENTACION.md) and [ANALISIS_CALCULOS.md](ANALISIS_CALCULOS.md).
+Code and documentation under [Apache 2.0](LICENSE). Every dataset, method, formula and font
+used is listed with its licence and citation in [SOURCES.md](SOURCES.md). The engine itself
+is commented in detail, and `pipeline/src/test` holds the test suite that keeps the rules
+honest.
 
 Team **HenDx** · NASA Space Apps Challenge 2026 · Huánuco, Peru.
