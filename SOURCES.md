@@ -30,7 +30,7 @@
 - [INIA, manejo agronómico de mashua](https://repositorio.inia.gob.pe/server/api/core/bitstreams/09437a44-e9a6-4f8e-a3e8-f431d0035033/content): referencia para especie y práctica de siembra; parámetros provisionales sujetos a validación local.
 - [INIA, manejo agronómico de yacón](https://repositorio.inia.gob.pe/server/api/core/bitstreams/9cdf6af6-5958-4183-8dee-0296eebeec2f/content): referencia para especie y época de siembra de secano; parámetros provisionales sujetos a validación local.
 - [Onest](https://github.com/google/fonts/blob/main/ofl/onest/METADATA.pb), Google Fonts, licencia SIL OFL en `app/src/main/assets/fonts/Onest-OFL.txt`: única familia de la interfaz Compose, instanciada en pesos 400, 500, 600, 700 y 800.
-- Ilustraciones (portada, cabecera, Kusi, icono y los dibujos de cada cultivo, incluidos arroz y avena) hechas para este proyecto e incluidas en el APK.
+- Ilustraciones (portada, cabecera, Kusi, icono y los dibujos de cada cultivo, incluidos arroz y avena): **generadas con una herramienta de IA** para este proyecto e incluidas en el APK. No reproducen obras existentes ni contienen marca, logotipo, bandera ni identificador de misión de la NASA. Véase la sección «AI assistance» del README.
 - La app ya no usa El Niño (NOAA CPC) ni voz: se retiraron el 15-nov-2026 y quedan fuera de la compilación.
 
 ## Fuentes pendientes de cada parámetro de cultivo
