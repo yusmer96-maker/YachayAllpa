@@ -150,6 +150,23 @@ tampered pack is rejected, so bad data cannot reach a farmer's decision. The app
 nothing about the farmer or the field anywhere — GPS stays on the phone, and only the
 fixed centre of the NASA grid cell is ever used to fetch data.
 
+## AI assistance
+
+Parts of this project were produced with AI tools, identified here as the NASA Space Apps
+Challenge requires:
+
+- **Code** — the application code in this repository was written and debugged with the
+  assistance of a large language model. The methods, formulas and thresholds it implements
+  are taken from the published sources cited in [SOURCES.md](SOURCES.md), and the test
+  suite in `pipeline/src/test` checks that the implementation follows them.
+- **Illustrations** — the cover, the header, the Kusi character, the app icon and the
+  per-crop drawings bundled in the APK were generated with an AI image tool.
+- **Text** — parts of this documentation and of the Space Apps submission were drafted
+  with a large language model.
+
+No AI-generated asset uses, contains or modifies NASA branding, logos, flags or mission
+identifiers. No data, formula or threshold in this project was invented by an AI tool.
+
 ## Credits and licence
 
 Code and documentation under [Apache 2.0](LICENSE). Every dataset, method, formula and font
